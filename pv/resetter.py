@@ -1,8 +1,9 @@
-# resetter
+# resetter.py
+# goes through all instruments in the IP range and performs resets, self tests, and clock settings
+# wavegen: also sets impedance to high-Z
+
 # 5/26/26
 # By Thomas Dodds
-
-# Continually enter IP addresses, reset instruments to factory defaults
 
 # %% Initialization - ideally only run once
 import pyvisa
@@ -17,6 +18,7 @@ insts = {
     'EDU34450A':[],
     'EDU36311A':[]
 }
+"""
 _SCOPE = "10.20.18.151"
 _METER = "10.20.18.142"
 _WAVEGEN = "10.20.18.191"
@@ -27,9 +29,10 @@ insts = {
     'EDU34450A':[_METER],
     'EDU36311A':[_POWER]
 }
+"""
 # %% Choose test
 if len(insts['EDUX1052G']) == 0:
-    test = ['10.20.18.%d' % i for i in range(141,250)]
+    test = ['10.20.18.%d' % i for i in range(130,202)]
 else:
     test = sorted(set(chain.from_iterable(insts.values())))
 # %% Run test
@@ -64,6 +67,7 @@ for ip in tqdm(test):
             # Instrument self-test
             inst.write('*TST?')
             # Add to test list if it isn't there
+            print('Reset instrument %s at IP %s' % (instmodel, ip))
             if ip not in insts[instmodel]:
                 insts[instmodel].append(ip)
     except pyvisa.VisaIOError:
